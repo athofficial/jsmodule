@@ -1,8 +1,7 @@
-// Atheios javascript module 0.1.4
+// Atheios javascript module 0.1.5
 // Works towards the Atheios blockchain
 // https://www.atheios.org
 // https://portal.atheios.org
-
 
 
 (function (root, factory) {
@@ -17,6 +16,7 @@
         root.Atheios = factory(root.CryptoJS, root.WebSocket || root.MozWebSocket);
     }
 }(this, function(CryptoJS, WebSocket) {
+    var protocolid=2;
 
     var Atheios = function() {};
     console.log("Defining Atheios scope");
@@ -61,9 +61,15 @@
             //return "wss://" + stage + "-" + urlAddition + ".portal.atheios.org/ws/" + credential + "/" + urlAddition;
             console.log("This definition: %s", this);
             if (options.local==="true") {
-                return "ws://localhost:3010/ws/"+options.key+ "/" + "0.1.1";
+                if (options.testapi==="true")
+                    return "ws://localhost:3011/ws/"+options.key+ "/" + protocolid;
+                else
+                    return "ws://localhost:3010/ws/"+options.key+ "/" + protocolid;
             } else {
-                return "wss://wss.atheios.org/ws/" + options.key + "/" + "0.1.1";
+                if (options.testapi==="true")
+                    return "wss://wss-test.atheios.org/ws/"+options.key+ "/" + protocolid;
+                else
+                    return "wss://wss.atheios.org/ws/" + options.key + "/" + protocolid;
             }
         },
 
@@ -225,6 +231,8 @@
 
                 var toSend = {
                     '@class' : '.AuthenticatedConnectRequest',
+                    protocolId: protocolid,
+                    apikey: this.options.key,
                     hmac : hmac
                 };
 
@@ -277,6 +285,7 @@
             }
 
             json['@class'] = requestType;
+            json['protocolId'] = protocolid;
 
             if (userRequestId == null || userRequestId == "") {
                 json.requestId = (new Date()).getTime() + "_" + (++this.requestCounter);

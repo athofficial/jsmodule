@@ -3,14 +3,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Atheios - JS implementation</title>
-<script type="text/javascript" src="https://www.atheios.org/src/atheios.js"></script>
-<script type="text/javascript" src="https://www.atheios.org/src/atheios-api.js"></script>
-<script type="text/javascript" src="https://www.atheios.org/src/hmac-sha256.js"></script>
+<script type="text/javascript" src="https://www.atheios.org/src/v0.1.5/atheios.js"></script>
+<script type="text/javascript" src="https://www.atheios.org/src/v0.1.5/atheios-api.js"></script>
+<script type="text/javascript" src="https://www.atheios.org/src/v0.1.5/hmac-sha256.js"></script>
 
 </head>
 <body>
 	<h1>Intro</h1>
-	<b>Version 0.1.4</b><hr>
+	<b>0.1.5</b><hr>
 	This is a test page to show how the interaction with the Atheios portal is currently working.<br>
 	In order to perform the test please enter Your private gametoken and gamesecret and set the connection to wss.atheios.org.
 	The ones here set as default will not work for You.
@@ -25,6 +25,10 @@
 	Game token <input id="gametoken" value="M1yqo-958Fw-yakkn-nPF16-4SpZX"><br>
 	Game secret <input id="gamesecret" value="3F9QYkgdraGLhCDJMiJpKQapAdGWJbzdFy3zKjGdXQxpOCv0co"><br>
 	<br>
+		<input type="radio" id="test" name="testapi" value="false">
+		<label for="internet">Staging server (preproduction server) V0.1.5</label><br>
+		<input type="radio" id="live" name="testapi" value="true">
+		<label for="localhost">Live server (production server) V0.1.4</label><br>
 		<input type="radio" id="internet" name="local" value="false">
 		<label for="internet">wss.atheios.org</label><br>
 		<input type="radio" id="localhost" name="local" value="true">
@@ -34,7 +38,16 @@
 		<textarea rows="5" cols="100" id="messages_init"></textarea>
 	</div>
 	<br>
-	<h2>2. Login</h2>
+	<h2>2. Game info</h2>
+	<p>
+		Using above GAMETOKEN
+	</p>
+	<button onClick='atheios.gameInfoRequest(document.getElementById("gametoken").value, gameInfoResponse)'>Fetch</button>
+	<div id="messages">
+		<textarea rows="5" cols="100" id="messages_gameinfo"></textarea>
+	</div>
+
+	<h2>3. Login</h2>
 	<p>
 		User name <input id="username" value="testuser"><br>
 		User pass <input id="userpass" value="blabla0"><br>
@@ -44,7 +57,7 @@
 		<textarea rows="5" cols="100" id="messages_login"></textarea>
 	</div>
 
-	<h2>3. Account details</h2>
+	<h2>4. Account details</h2>
 	<p>
 		AuthToken <input id="authToken1"><br>
 		UserId <input id="userId1"><br>
@@ -54,7 +67,7 @@
 		<textarea rows="5" cols="100" id="messages_account"></textarea>
 	</div>
 
-	<h2>4. Wage/game start</h2>
+	<h2>5. Wage/game start</h2>
 	<p>
 		AuthToken <input id="authToken2"><br>
 		UserId <input id="userId2"><br>
@@ -66,7 +79,7 @@
 		<textarea rows="5" cols="100" id="messages_wage"></textarea>
 	</div>
 
-	<h1>5. Game finish</h1>
+	<h1>6. Game finish</h1>
 	<p>
 		AuthToken <input id="authToken3"><br>
 		UserId <input id="userId3"><br>
@@ -99,15 +112,20 @@
 	//Initialse the SDK
 	function init() {
 		var local="false";
-		console.log("Debug++++: %s", document.getElementById('localhost').value);
 		if (document.getElementById('localhost').checked) {
 			local="true";
+		}
+
+		var testapi="false";
+		if (document.getElementById('test').checked) {
+			testapi="true";
 		}
 
 		atheios.initLive({
 			key: document.getElementById('gametoken').value,
 			secret: document.getElementById('gamesecret').value,
 			local: local,
+			testapi: testapi,
 			onNonce: onNonce,
 			onInit: onInit,
 			onMessage: onMessage,
@@ -131,6 +149,10 @@
 		document.getElementById('messages_init').value=JSON.stringify(response);
 	}
 
+	function gameInfoResponse(response) {
+		console.log(JSON.stringify(response));
+		document.getElementById('messages_gameinfo').value=JSON.stringify(response);
+	}
 
 
 	function loginResponse(response) {

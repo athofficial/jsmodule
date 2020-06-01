@@ -55,6 +55,7 @@ Atheios.prototype.setWageRequest = function(authToken, wage, userId, gameId , ga
 // Will provide more information on the account
 //
 // Response: AccountDetailsResponse
+//      protocolId  Procotol version
 //      value   as string
 //      currency as string
 //
@@ -74,6 +75,16 @@ Atheios.prototype.accountDetailsRequest = function(authToken, userId ,onResponse
 //      newPlayer as boolean
 //      userId as string
 //      requestID as string
+
+Atheios.prototype.gameInfoRequest = function(apikey ,onResponse)
+{
+    var request = {};
+    request["apikey"] = apikey;
+
+    atheios.sendWithData("GameInfoRequest", request, onResponse);
+}
+
+
 
 Atheios.prototype.authenticationRequest = function(username, password, apikey, onResponse )
 {
